@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#ffffff" />
+    <link rel="manifest" href="/manifest.json" />
     <title>公众号排版助手</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -54,6 +55,12 @@
       /* iOS Safe Area */
       .pb-safe {
         padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      /* Fade mask for horizontal scrolling lists */
+      .mask-linear-fade {
+        mask-image: linear-gradient(to right, transparent, black 10px, black 90%, transparent);
+        -webkit-mask-image: linear-gradient(to right, transparent, black 10px, black 90%, transparent);
       }
     </style>
   <script type="importmap">
