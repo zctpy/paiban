@@ -54,16 +54,16 @@ export const processWithGemini = async (text: string, action: AIAction): Promise
 ${text}`;
       break;
     case 'polish':
-      prompt = `请将以下文本重写，使其更加生动、流畅、专业，适合微信公众号读者的阅读习惯。修正错别字。保持 Markdown 格式（标题、列表等）不变。\n\n文本：\n${text}`;
+      prompt = `请将以下文本重写，使其更加生动、流畅、专业，适合微信公众号读者的阅读习惯。修正错别字。保持 Markdown 格式（标题、列表等）不变。严禁包含任何开场白或结束语，直接输出结果。\n\n文本：\n${text}`;
       break;
     case 'summarize':
-      prompt = `请为以下文本提供一个简短、吸引人的摘要，适合作为微信公众号的“摘要”字段。字数限制在120字以内。\n\n文本：\n${text}`;
+      prompt = `请为以下文本提供一个简短、吸引人的摘要，适合作为微信公众号的“摘要”字段。字数限制在120字以内。严禁包含任何开场白或结束语，直接输出结果。\n\n文本：\n${text}`;
       break;
     case 'title':
-      prompt = `请为这篇文章生成 5 个吸引眼球、高点击率（但不要标题党）的标题。以无序列表形式返回。\n\n文本：\n${text}`;
+      prompt = `请为这篇文章生成 5 个吸引眼球、高点击率（但不要标题党）的标题。以无序列表形式返回。严禁包含任何开场白或结束语，直接输出结果。\n\n文本：\n${text}`;
       break;
     case 'emoji':
-      prompt = `请在以下文本的标题和关键段落中添加相关的 Emoji 表情，使其视觉上更具吸引力。不要过度使用。保持 Markdown 格式不变。\n\n文本：\n${text}`;
+      prompt = `请在以下文本的标题和关键段落中添加相关的 Emoji 表情，使其视觉上更具吸引力。不要过度使用。保持 Markdown 格式不变。严禁包含任何开场白或结束语，直接输出结果。\n\n文本：\n${text}`;
       break;
   }
 
