@@ -1,0 +1,5 @@
+{
+  "name": "公众号排版助手",
+  "description": "智能微信公众号排版助手，支持一键换肤和 Gemini AI 内容增强。",
+  "requestFramePermissions": []
+}
