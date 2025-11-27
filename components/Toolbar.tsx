@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { THEMES } from '../constants';
 import { Theme, AIAction } from '../types';
-import { Wand2, Type, FileText, Smile, Sparkles, MoreHorizontal, LayoutTemplate } from 'lucide-react';
+import { Wand2, Type, FileText, Smile, Sparkles, MoreHorizontal, LayoutTemplate, Image as ImageIcon } from 'lucide-react';
 import { Button } from './Button';
 
 interface ToolbarProps {
   currentTheme: Theme;
   onThemeChange: (theme: Theme) => void;
   onAIAction: (action: AIAction) => void;
+  onOpenCoverGenerator: () => void;
   isProcessing: boolean;
 }
 
@@ -15,6 +16,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   currentTheme, 
   onThemeChange, 
   onAIAction,
+  onOpenCoverGenerator,
   isProcessing 
 }) => {
   const [showMenu, setShowMenu] = useState(false);
@@ -34,28 +36,43 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block"></div>
 
         {/* Theme Selector - Scrollable on mobile */}
-        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1 px-1 flex-1 mask-linear-fade">
-          {THEMES.map(theme => (
-            <button
-              key={theme.id}
-              onClick={() => onThemeChange(theme)}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
-                currentTheme.id === theme.id 
-                  ? 'bg-slate-800 text-white shadow-md' 
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <span 
-                className="w-3 h-3 rounded-full border border-white/20" 
-                style={{ backgroundColor: theme.previewColor }}
-              />
-              <span>{theme.name}</span>
-            </button>
-          ))}
+        <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-1 px-1 flex-1 mask-linear-fade">
+          {THEMES.map(theme => {
+            // Shorten name for toolbar (remove content in parentheses)
+            const shortName = theme.name.split(' ')[0];
+            return (
+              <button
+                key={theme.id}
+                onClick={() => onThemeChange(theme)}
+                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-full text-xs md:text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
+                  currentTheme.id === theme.id 
+                    ? 'bg-slate-800 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <span 
+                  className="w-2.5 h-2.5 rounded-full border border-white/20" 
+                  style={{ backgroundColor: theme.previewColor }}
+                />
+                <span>{shortName}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       <div className="flex items-center space-x-2 shrink-0">
+        {/* Cover Gen Button */}
+        <Button 
+          variant="secondary" 
+          icon={<ImageIcon className="w-4 h-4 text-purple-600" />}
+          onClick={onOpenCoverGenerator}
+          disabled={isProcessing}
+          className="hidden md:flex text-xs md:text-sm px-3 border-purple-200 hover:bg-purple-50 hover:border-purple-300 text-purple-700"
+        >
+          生成封面
+        </Button>
+
         {/* Main CTA: Smart Format */}
         <Button 
           variant="primary" 
@@ -85,6 +102,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   微调工具
                 </div>
+                 <button 
+                  onClick={() => { onOpenCoverGenerator(); setShowMenu(false); }}
+                  className="w-full flex md:hidden items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  <ImageIcon className="w-4 h-4 mr-3 text-purple-500" />
+                  生成封面
+                </button>
                 <button 
                   onClick={() => { onAIAction('polish'); setShowMenu(false); }}
                   className="w-full flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"

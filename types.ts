@@ -30,3 +30,12 @@ export interface ParsedNode {
 }
 
 export type AIAction = 'smart_format' | 'polish' | 'summarize' | 'title' | 'emoji';
+
+export type CoverStyle = 'business' | 'illustration' | 'tech' | 'warm' | 'abstract';
+
+export interface CoverOptions {
+  style: CoverStyle;
+  title: string;
+  overlayOpacity: number;
+  textColor: string;
+}

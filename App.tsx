@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Toolbar } from './components/Toolbar';
 import { Editor } from './components/Editor';
 import { Preview } from './components/Preview';
+import { CoverGenerator } from './components/CoverGenerator';
 import { Theme, AIAction } from './types';
 import { THEMES, DEFAULT_CONTENT } from './constants';
 import { processWithGemini } from './services/gemini';
@@ -14,6 +15,7 @@ const App: React.FC = () => {
   const [currentTheme, setCurrentTheme] = useState<Theme>(THEMES[0]);
   const [isProcessingAI, setIsProcessingAI] = useState(false);
   const [notification, setNotification] = useState<{message: string, type: 'error' | 'success'} | null>(null);
+  const [showCoverGenerator, setShowCoverGenerator] = useState(false);
   
   // Mobile Tab State
   const [activeTab, setActiveTab] = useState<'editor' | 'preview'>('editor');
@@ -72,6 +74,7 @@ const App: React.FC = () => {
         currentTheme={currentTheme} 
         onThemeChange={setCurrentTheme}
         onAIAction={handleAIAction}
+        onOpenCoverGenerator={() => setShowCoverGenerator(true)}
         isProcessing={isProcessingAI}
       />
 
@@ -114,9 +117,16 @@ const App: React.FC = () => {
         </button>
       </div>
 
+      {/* Cover Generator Modal */}
+      <CoverGenerator 
+        isOpen={showCoverGenerator} 
+        onClose={() => setShowCoverGenerator(false)} 
+        articleContent={content}
+      />
+
       {/* Notification Toast */}
       {notification && (
-        <div className={`fixed bottom-20 md:bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-xl text-white font-medium text-sm animate-in slide-in-from-bottom-5 z-50 whitespace-nowrap ${
+        <div className={`fixed bottom-20 md:bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-xl text-white font-medium text-sm animate-in slide-in-from-bottom-5 z-[60] whitespace-nowrap ${
           notification.type === 'error' ? 'bg-red-500' : 'bg-brand-600'
         }`}>
           {notification.message}

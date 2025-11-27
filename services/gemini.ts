@@ -1,5 +1,5 @@
-import { GoogleGenAI } from "@google/genai";
-import { AIAction } from '../types';
+import { GoogleGenAI, Type } from "@google/genai";
+import { AIAction, CoverStyle } from '../types';
 
 let genAI: GoogleGenAI | null = null;
 
@@ -81,4 +81,92 @@ ${text}`;
     console.error("Gemini API Error:", error);
     throw new Error("AI 处理失败，请稍后重试。");
   }
+};
+
+/**
+ * Step 1: Analyze text to generate a title and an image prompt.
+ */
+export const analyzeArticleForCover = async (content: string, style: CoverStyle): Promise<{ title: string, imagePrompt: string }> => {
+  const ai = getAI();
+  const modelName = 'gemini-2.5-flash';
+
+  const stylePrompts: Record<CoverStyle, string> = {
+    business: "Minimalist, professional, geometric shapes, blue and grey tones, clean background, high quality, 4k",
+    illustration: "Flat vector illustration, trendy style, vibrant colors, simple composition, behance style, 4k",
+    tech: "Futuristic, cyberpunk, neon lights, dark background, circuit patterns, digital art, 4k",
+    warm: "Cozy, watercolor style, soft lighting, pastel colors, healing atmosphere, nature elements, 4k",
+    abstract: "Abstract art, fluid gradients, modern shapes, artistic, creative, vivid colors, 4k"
+  };
+
+  const styleDesc = stylePrompts[style];
+
+  const prompt = `
+    Analyze the following article content (truncated). 
+    Your task is to generate JSON output with two fields:
+    1. "title": A short, catchy title for a cover image (max 8 Chinese characters or 3 English words). It must be related to the core topic.
+    2. "imagePrompt": A detailed English prompt for an AI image generator. The prompt should describe a background image that matches the sentiment of the article and the style: "${styleDesc}". The image prompt should NOT contain text, letters, or words. Focus on visual elements, lighting, and composition.
+
+    Article Content:
+    ${content.slice(0, 1000)}
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+                title: { type: Type.STRING },
+                imagePrompt: { type: Type.STRING }
+            }
+        }
+      }
+    });
+
+    if (response.text) {
+        return JSON.parse(response.text);
+    }
+    throw new Error("无法解析 AI 响应");
+  } catch (error) {
+    console.error("Analyze Cover Error:", error);
+    throw new Error("封面分析失败");
+  }
+};
+
+/**
+ * Step 2: Generate the image using the prompt.
+ */
+export const generateCoverImage = async (prompt: string): Promise<string> => {
+    const ai = getAI();
+    // Use gemini-2.5-flash-image for standard image generation
+    const modelName = 'gemini-2.5-flash-image'; 
+
+    try {
+        const response = await ai.models.generateContent({
+            model: modelName,
+            contents: {
+                parts: [{ text: prompt }]
+            },
+            config: {
+                imageConfig: {
+                    aspectRatio: "16:9"
+                }
+            }
+        });
+
+        // Extract base64 image
+        for (const part of response.candidates?.[0]?.content?.parts || []) {
+            if (part.inlineData && part.inlineData.data) {
+                return part.inlineData.data;
+            }
+        }
+        
+        throw new Error("未生成图片数据");
+    } catch (error) {
+        console.error("Generate Image Error:", error);
+        throw new Error("图片生成失败，请稍后重试。");
+    }
 };
